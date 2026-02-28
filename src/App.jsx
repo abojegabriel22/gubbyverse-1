@@ -13,7 +13,7 @@ function App() {
     <>
       <HeaderComponent />
       <AboutComponent />
-      <TaskComponent />
+      {/* <TaskComponent /> */}
       <FooterComponent />
       <Routes>
         <Route path="/" element={<TaskComponent />} />
