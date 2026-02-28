@@ -43,16 +43,34 @@ const TaskComponent = () => {
     try {
       setLoading(true);
 
+      // const response = await fetch(
+      //   "https://script.google.com/macros/s/AKfycbwii2crMioWE2OqNzh4p-dskkxI4mQpcS7_siyQhAEn-rC465TD_UW73P6GQ08kK_rB/exec",
+      //   {
+      //     method: "POST",
+      //     body: new URLSearchParams({
+      //       wallet,
+      //       twitterHandle,
+      //     })
+      //   }
+      // );
+      
+      // const response = await fetch(
+      //   "https://script.google.com/macros/s/AKfycbwii2crMioWE2OqNzh4p-dskkxI4mQpcS7_siyQhAEn-rC465TD_UW73P6GQ08kK_rB/exec",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({
+      //       twitterHandle,
+      //       wallet,
+      //     }),
+      //   }
+      // );
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbwii2crMioWE2OqNzh4p-dskkxI4mQpcS7_siyQhAEn-rC465TD_UW73P6GQ08kK_rB/exec",
-        {
-          method: "POST",
-        //   headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            wallet,
-            twitterHandle,
-          })
-        }
+        `https://script.google.com/macros/s/AKfycbwii2crMioWE2OqNzh4p-dskkxI4mQpcS7_siyQhAEn-rC465TD_UW73P6GQ08kK_rB/exec?twitterHandle=${encodeURIComponent(
+          twitterHandle
+        )}&wallet=${encodeURIComponent(wallet)}`
       );
 
       const result = await response.json();
