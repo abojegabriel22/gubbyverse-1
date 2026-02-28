@@ -47,8 +47,11 @@ const TaskComponent = () => {
         "https://script.google.com/macros/s/AKfycbwii2crMioWE2OqNzh4p-dskkxI4mQpcS7_siyQhAEn-rC465TD_UW73P6GQ08kK_rB/exec",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ twitterHandle, wallet }),
+        //   headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            wallet,
+            twitterHandle,
+          })
         }
       );
 
