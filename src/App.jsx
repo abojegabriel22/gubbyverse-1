@@ -14,7 +14,7 @@ function App() {
       <HeaderComponent />
       <AboutComponent />
       {/* <TaskComponent /> */}
-      <FooterComponent />
+      {/* <FooterComponent /> */}
       <Routes>
         <Route path="/" element={<TaskComponent />} />
         {/* Add more routes here if needed */}
