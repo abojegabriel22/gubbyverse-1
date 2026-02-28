@@ -10,27 +10,38 @@ const TaskComponent = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loadingTasks, setLoadingTasks] = useState([]); // track tasks currently in progress
 
   const totalRequiredTasks = 3;
 
-  // ✅ Progress %
+  // Progress %
   const progress = useMemo(() => {
     return (state.completedTasks.length / totalRequiredTasks) * 100;
   }, [state.completedTasks]);
 
-  // ✅ Handle Task Click (disable after done)
+  // Handle Task Click (disable after done)
   const handleTaskClick = (taskNumber) => {
-    if (!state.completedTasks.includes(taskNumber)) {
-      dispatch({ type: "COMPLETE_TASK", payload: taskNumber });
+    if (!state.completedTasks.includes(taskNumber) && !loadingTasks.includes(taskNumber)) {
+      // mark as loading for this task
+      setLoadingTasks((prev) => [...prev, taskNumber]);
+
+      // simulate task completion after 10–15 seconds
+      const delay = Math.floor(Math.random() * 5000) + 10000 // 10-15 seconds
+      setTimeout(()=>{
+        dispatch({ type: "COMPLETE_TASK", payload: taskNumber })
+        setLoadingTasks(prev => prev.filter(t => t !== taskNumber))
+      }, delay)
+
+      // dispatch({ type: "COMPLETE_TASK", payload: taskNumber });
     }
   };
 
-  // ✅ Wallet validation
+  // Wallet validation
   const isWalletValid = /^0x[a-fA-F0-9]{40}$/.test(wallet);
 
   const canSubmit = state.completedTasks.length >= totalRequiredTasks && confirmedCheck && isWalletValid && twitterHandle.length > 2;
 
-  // ✅ Submit to Google Sheet
+  // Submit to Google Sheet
   const submitToSheet = async () => {
     setError("");
     setSuccess("");
@@ -53,7 +64,7 @@ const TaskComponent = () => {
       //     })
       //   }
       // );
-      
+
       // const response = await fetch(
       //   "https://script.google.com/macros/s/AKfycbwii2crMioWE2OqNzh4p-dskkxI4mQpcS7_siyQhAEn-rC465TD_UW73P6GQ08kK_rB/exec",
       //   {
@@ -124,18 +135,14 @@ const TaskComponent = () => {
                   <span className="task-number">01</span>
                   <div className="task-title">Follow Gubby X account</div>
                 </div>
-                <a
-                  href="https://x.com/gubyverse?s=21"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn task-btn"
-                  onClick={() => handleTaskClick(1)}
-                  style={{
-                    pointerEvents: state.completedTasks.includes(1) ? "none" : "auto",
-                    opacity: state.completedTasks.includes(1) ? 0.6 : 1,
-                  }}
-                >
-                  {state.completedTasks.includes(1) ? "Done ✓" : "Go"}
+                <a href="https://x.com/gubyverse?s=21" target="_blank" rel="noopener noreferrer" className="btn task-btn" onClick={() => handleTaskClick(1)} style={{ pointerEvents: state.completedTasks.includes(1) ? "none" : "auto", opacity: state.completedTasks.includes(1) ? 0.6 : 1,
+                  }}>
+                  {state.completedTasks.includes(1)
+                    ? "Done ✓"
+                    : loadingTasks.includes(1)
+                    ? "Checking..."   // show loader text while waiting
+                    : "Go"
+                  }
                 </a>
               </div>
 
@@ -145,18 +152,14 @@ const TaskComponent = () => {
                   <span className="task-number">02</span>
                   <div className="task-title">Follow founder account</div>
                 </div>
-                <a
-                  href="https://x.com/stillpushingg?s=21"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn task-btn"
-                  onClick={() => handleTaskClick(2)}
-                  style={{
-                    pointerEvents: state.completedTasks.includes(2) ? "none" : "auto",
-                    opacity: state.completedTasks.includes(2) ? 0.6 : 1,
-                  }}
-                >
-                  {state.completedTasks.includes(2) ? "Done ✓" : "Go"}
+                <a href="https://x.com/stillpushingg?s=21" target="_blank" rel="noopener noreferrer" className="btn task-btn" onClick={() => handleTaskClick(2)} style={{ pointerEvents: state.completedTasks.includes(2) ? "none" : "auto", opacity: state.completedTasks.includes(2) ? 0.6 : 1,
+                  }}>
+                  {state.completedTasks.includes(2)
+                    ? "Done ✓"
+                    : loadingTasks.includes(2)
+                    ? "Loading..."
+                    : "Go"
+                  }
                 </a>
               </div>
 
@@ -166,12 +169,13 @@ const TaskComponent = () => {
                   <span className="task-number">03</span>
                   <div className="task-title">Like, RT & Tag 3 friends</div>
                 </div>
-                <button
-                  className="btn task-btn"
-                  onClick={() => handleTaskClick(3)}
-                  disabled={state.completedTasks.includes(3)}
-                >
-                  {state.completedTasks.includes(3) ? "Done ✓" : "Go"}
+                <button className="btn task-btn" onClick={() => handleTaskClick(3)} disabled={state.completedTasks.includes(3)}>
+                  {state.completedTasks.includes(3)
+                    ? "Done ✓"
+                    : loadingTasks.includes(3)
+                    ? "Loading..."
+                    : "Go"
+                  }
                 </button>
               </div>
 
@@ -183,27 +187,15 @@ const TaskComponent = () => {
                 </div>
                 <div className="radio-group">
                   <label className="radio-option">
-                    <input
-                      type="radio"
-                      name="gubbler"
-                      onChange={() => setConfirmedCheck(true)}
-                      checked={confirmedCheck}
-                    />
+                    <input type="radio" name="gubbler" onChange={() => setConfirmedCheck(true)} checked={confirmedCheck}/>
                     <span>Yes</span>
                   </label>
-
                   <label className="radio-option">
-                    <input
-                      type="radio"
-                      name="gubbler"
-                      onChange={() => setConfirmedCheck(false)}
-                      checked={!confirmedCheck}
-                    />
+                    <input type="radio" name="gubbler" onChange={() => setConfirmedCheck(false)} checked={!confirmedCheck}/>
                     <span>No</span>
                   </label>
                 </div>
               </div>
-
             </div>
 
             {/* FORM SECTION */}
@@ -214,17 +206,7 @@ const TaskComponent = () => {
                 </label>
                 <div className="input-group">
                   <span className="input-group-text">@</span>
-                  <input
-                    type="text"
-                    className={`form-control ${
-                      twitterHandle.length > 0 && twitterHandle.length <= 2
-                        ? "is-invalid"
-                        : ""
-                    }`}
-                    value={twitterHandle}
-                    onChange={(e) => setTwitterHandle(e.target.value)}
-                    placeholder="your_handle"
-                  />
+                  <input type="text" className={`form-control ${ twitterHandle.length > 0 && twitterHandle.length <= 2 ? "is-invalid" : "" }`} value={twitterHandle} onChange={(e) => setTwitterHandle(e.target.value)} placeholder="your_handle"/>
                 </div>
               </div>
 
@@ -232,15 +214,7 @@ const TaskComponent = () => {
                 <label className="form-label text-uppercase small">
                   Your EVM Address
                 </label>
-                <input
-                  type="text"
-                  className={`form-control ${
-                    wallet && !isWalletValid ? "is-invalid" : ""
-                  }`}
-                  value={wallet}
-                  onChange={(e) => setWallet(e.target.value)}
-                  placeholder="0x..."
-                />
+                <input type="text" className={`form-control ${ wallet && !isWalletValid ? "is-invalid" : "" }`} value={wallet} onChange={(e) => setWallet(e.target.value)} placeholder="Paste Wallet Address Here..."/>
                 <small className="text-muted">ETH Network</small>
               </div>
             </div>
@@ -252,11 +226,7 @@ const TaskComponent = () => {
             )}
 
             {/* Submit Button */}
-            <button
-              className="btn complete-btn1 w-100 mt-4"
-              disabled={!canSubmit || loading}
-              onClick={submitToSheet}
-            >
+            <button className="btn complete-btn1 w-100 mt-4" disabled={!canSubmit || loading} onClick={submitToSheet}>
               {loading ? (
                 <>
                   <span className="spinner-border spinner-border-sm me-2"></span>
